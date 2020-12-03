@@ -49,10 +49,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var scoreLabel: UILabel!
     @IBOutlet weak var cardsView: CardsView! {
         didSet {
-            let swipeGestureRegognizer = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeDown(_:)))
+            let swipeGestureRegognizer = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeDownGesture(_:)))
             swipeGestureRegognizer.direction = .down
             swipeGestureRegognizer.delegate = self
-            let rotationRestureRecognizer = UIRotationGestureRecognizer(target: self, action: #selector(handleRotation(_:)))
+            let rotationRestureRecognizer = UIRotationGestureRecognizer(target: self, action: #selector(handleRotationGesture(_:)))
             rotationRestureRecognizer.delegate = self
             
             cardsView.addGestureRecognizer(swipeGestureRegognizer)
@@ -350,7 +350,7 @@ extension ViewController: SetGameDelegate {
 }
 
 extension ViewController: UIGestureRecognizerDelegate {
-    @objc func handleTap(_ sender: UITapGestureRecognizer) {
+    @objc func handleTapGesture(_ sender: UITapGestureRecognizer) {
         let view = sender.view as! CardView
         let convertedCard = convertForModel((view.shape!, view.color!, view.shading!, view.number!))
         
@@ -366,7 +366,7 @@ extension ViewController: UIGestureRecognizerDelegate {
         }
     }
     
-    @objc func handleSwipeDown(_ sender: UISwipeGestureRecognizer) {
+    @objc func handleSwipeDownGesture(_ sender: UISwipeGestureRecognizer) {
         switch sender.state {
         case .ended:
             currentCards += game.dealCards()
@@ -376,7 +376,7 @@ extension ViewController: UIGestureRecognizerDelegate {
         }
     }
     
-    @objc func handleRotation(_ sender: UIRotationGestureRecognizer) {
+    @objc func handleRotationGesture(_ sender: UIRotationGestureRecognizer) {
         switch sender.state {
         case .ended:
             currentCards.shuffle()
