@@ -57,6 +57,7 @@ class ViewController: UIViewController {
             
             cardsView.addGestureRecognizer(swipeGestureRegognizer)
             cardsView.addGestureRecognizer(rotationRestureRecognizer)
+            cardsView.gestureDelegate = self
         }
     }
     @IBOutlet weak var newGameButton: UIButton! {
@@ -91,7 +92,7 @@ class ViewController: UIViewController {
     
     // MARK: UI Methods
     private func updateCardsView() {
-        cardsView.updateCards(cards: convertForView(currentCards), delegate: self)
+        cardsView.updateCards(convertForView(currentCards))
     }
     
     private func cardView(for card: Card) -> CardView {
@@ -255,13 +256,11 @@ extension ViewController: SetGameDelegate {
         if selectedCards.count == 3 {
             if game.isSet(for: selectedCards.values.map { $0 }) {
                 scoreCount += 3
-                selectedCards.values.forEach { card in
-                    cardView(for: card).facedUp = false
-                }
                 
-                for key in selectedCards.keys {
-                    matchedCards[key] = selectedCards[key]
+                selectedCards.forEach { card in
+                    currentCards.removeAll(where: { $0 == card.value })
                 }
+                updateCardsView()
                 
                 if !game.isDeckFinished {
                     dealCardsButton.textColor(to: .systemRed)
@@ -351,8 +350,11 @@ extension ViewController: SetGameDelegate {
 
 extension ViewController: UIGestureRecognizerDelegate {
     @objc func handleTapGesture(_ sender: UITapGestureRecognizer) {
-        let view = sender.view as! CardView
-        let convertedCard = convertForModel((view.shape!, view.color!, view.shading!, view.number!))
+        guard let cardView = sender.view as? CardView else {
+            return
+        }
+        
+        let convertedCard = convertForModel((cardView.shape!, cardView.color!, cardView.shading!, cardView.number!))
         
         switch sender.state {
         case .ended:

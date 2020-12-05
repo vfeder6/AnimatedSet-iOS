@@ -26,7 +26,7 @@ struct SetGame {
                 }
             }
         }
-        cards.shuffle()
+//        cards.shuffle()
         self.cards = cards
         nextCardIndex = 0
     }

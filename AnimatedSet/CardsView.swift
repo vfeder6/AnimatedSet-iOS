@@ -8,7 +8,7 @@
 import UIKit
 
 class CardsView: UIView {
-    private weak var delegate: UIGestureRecognizerDelegate?
+    weak var gestureDelegate: UIGestureRecognizerDelegate?
     private lazy var grid: Grid = {
         createGrid()
     }()
@@ -19,16 +19,34 @@ class CardsView: UIView {
     }
     
     override func draw(_ rect: CGRect) {
-        subviews.forEach { $0.removeFromSuperview() }
+        func rearrange() {
+            for index in 0 ..< subviews.count {
+                if let cell = grid[index] {
+                    subviews[index].frame = cell
+                }
+            }
+        }
+        
         grid.cellCount = cards.count
         
-        for index in 0 ..< cards.count {
-            if let cell = grid[index] {
-                let cardView = CardView(frame: cell, shape: cards[index].0, color: cards[index].1, shading: cards[index].2, number: cards[index].3)
-                let tapGestureRecognizer = UITapGestureRecognizer(target: delegate, action: #selector(ViewController.handleTapGesture(_:)))
-                cardView.addGestureRecognizer(tapGestureRecognizer)
-                self.addSubview(cardView)
+        if cards.count > subviews.count {
+            rearrange()
+            
+            for index in subviews.count ..< cards.count {
+                if let cell = grid[index] {
+                    let cardView = CardView(frame: cell, shape: cards[index].0, color: cards[index].1, shading: cards[index].2, number: cards[index].3)
+                    let tapGestureRecognizer = UITapGestureRecognizer(target: gestureDelegate, action: #selector(ViewController.handleTapGesture(_:)))
+                    cardView.addGestureRecognizer(tapGestureRecognizer)
+                    self.addSubview(cardView)
+                }
             }
+        } else {
+            subviews.forEach { subview in
+                if let cardView = subview as? CardView, !cards.contains(where: { $0 == (cardView.shape, cardView.color, cardView.shading, cardView.number) }) {
+                    cardView.removeFromSuperview()
+                }
+            }
+            rearrange()
         }
     }
     
@@ -38,9 +56,25 @@ class CardsView: UIView {
         return grid
     }
     
-    // TODO: Why setting the delegate here? Why not in a convenience init?
-    func updateCards(cards: [(CardView.Shape, UIColor, CardView.Shading, Int)], delegate: UIGestureRecognizerDelegate) {
-        self.delegate = delegate
-        self.cards = cards
+    func updateCards(_ cards: [(CardView.Shape, UIColor, CardView.Shading, Int)]) {
+        if cards.count > self.cards.count {
+            cards.forEach { card in
+                if !self.cards.contains(where: { $0 == card }) {
+                    self.cards.append(card)
+                }
+            }
+        } else {
+            self.cards.forEach { card in
+                if !cards.contains(where: { $0 == card }) {
+                    self.cards.remove(card)
+                }
+            }
+        }
+    }
+}
+
+extension Array where Element == (CardView.Shape, UIColor, CardView.Shading, Int) {
+    mutating func remove(_ element: Element) {
+        self.removeAll(where: { $0 == element })
     }
 }
