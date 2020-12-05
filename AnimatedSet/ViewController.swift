@@ -73,6 +73,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var dealCardsButton: UIButton! {
         didSet {
             dealCardsButton.setAttributedTitle(NSAttributedString(string: "Deal cards"), for: .normal)
+            cardsView.deckFrame = dealCardsButton.frame
         }
     }
     @IBOutlet weak var winningLabel: UILabel! {

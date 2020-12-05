@@ -9,6 +9,7 @@ import UIKit
 
 class CardsView: UIView {
     weak var gestureDelegate: UIGestureRecognizerDelegate?
+    var deckFrame: CGRect?
     private lazy var grid: Grid = {
         createGrid()
     }()
@@ -22,7 +23,7 @@ class CardsView: UIView {
         func rearrange() {
             for index in 0 ..< subviews.count {
                 if let cell = grid[index] {
-                    subviews[index].frame = cell
+                    animate { self.subviews[index].frame = cell }
                 }
             }
         }
@@ -34,15 +35,17 @@ class CardsView: UIView {
             
             for index in subviews.count ..< cards.count {
                 if let cell = grid[index] {
-                    let cardView = CardView(frame: cell, shape: cards[index].0, color: cards[index].1, shading: cards[index].2, number: cards[index].3)
+                    let cardView = CardView(frame: deckFrame ?? CGRect.zero, shape: cards[index].0, color: cards[index].1, shading: cards[index].2, number: cards[index].3)
                     let tapGestureRecognizer = UITapGestureRecognizer(target: gestureDelegate, action: #selector(ViewController.handleTapGesture(_:)))
                     cardView.addGestureRecognizer(tapGestureRecognizer)
                     self.addSubview(cardView)
+                    animate { cardView.frame = cell }
                 }
             }
         } else {
             subviews.forEach { subview in
                 if let cardView = subview as? CardView, !cards.contains(where: { $0 == (cardView.shape, cardView.color, cardView.shading, cardView.number) }) {
+                    // TODO: Remove animated to discard pile (create it!!!)
                     cardView.removeFromSuperview()
                 }
             }
@@ -70,6 +73,20 @@ class CardsView: UIView {
                 }
             }
         }
+    }
+}
+
+extension CardsView {
+    func animate(withDuraton duration: TimeInterval = 0.3,
+                 delay: TimeInterval = 0.0,
+                 options: UIView.AnimationOptions = [.curveEaseInOut],
+                 _ animations: @escaping () -> Void,
+                 completion: ((UIViewAnimatingPosition) -> Void)? = nil) {
+        UIViewPropertyAnimator.runningPropertyAnimator(withDuration: duration,
+                                                       delay: delay,
+                                                       options: options,
+                                                       animations: animations,
+                                                       completion: completion)
     }
 }
 
