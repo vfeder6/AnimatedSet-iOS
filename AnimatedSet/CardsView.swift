@@ -24,11 +24,12 @@ class CardsView: UIView {
             for index in 0 ..< subviews.count {
                 if let cell = grid[index] {
                     animate { self.subviews[index].frame = cell }
+                    
                 }
             }
         }
         
-        grid.cellCount = cards.count
+        grid = createGrid()
         
         if cards.count > subviews.count {
             rearrange()

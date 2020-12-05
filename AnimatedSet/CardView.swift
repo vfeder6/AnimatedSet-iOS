@@ -36,6 +36,7 @@ class CardView: UIView {
         self.color = color
         self.shading = shading
         self.number = number
+        contentMode = .redraw
     }
     
     override func draw(_ rect: CGRect) {
