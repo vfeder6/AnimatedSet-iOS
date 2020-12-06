@@ -10,6 +10,7 @@ import UIKit
 class CardsView: UIView {
     weak var gestureDelegate: UIGestureRecognizerDelegate?
     var deckFrame: CGRect?
+    private let standardAnimationDuration: TimeInterval = 0.5
     private lazy var grid: Grid = {
         createGrid()
     }()
@@ -20,11 +21,10 @@ class CardsView: UIView {
     }
     
     override func draw(_ rect: CGRect) {
-        func rearrange() {
+        func rearrange(after delay: TimeInterval = 0.0) {
             for index in 0 ..< subviews.count {
                 if let cell = grid[index] {
-                    animate { self.subviews[index].frame = cell }
-                    
+                    animate(subviews[index], after: delay) { self.subviews[index].frame = cell }
                 }
             }
         }
@@ -39,18 +39,20 @@ class CardsView: UIView {
                     let cardView = CardView(frame: deckFrame ?? CGRect.zero, shape: cards[index].0, color: cards[index].1, shading: cards[index].2, number: cards[index].3)
                     let tapGestureRecognizer = UITapGestureRecognizer(target: gestureDelegate, action: #selector(ViewController.handleTapGesture(_:)))
                     cardView.addGestureRecognizer(tapGestureRecognizer)
+                    cardView.alpha = 0.0
+                    cardView.frame = deckFrame ?? CGRect.zero
+                    animate(cardView, withDuration: 2, after: standardAnimationDuration) { cardView.frame = cell; cardView.alpha = 1.0 }
                     self.addSubview(cardView)
-                    animate { cardView.frame = cell }
                 }
             }
         } else {
             subviews.forEach { subview in
                 if let cardView = subview as? CardView, !cards.contains(where: { $0 == (cardView.shape, cardView.color, cardView.shading, cardView.number) }) {
-                    // TODO: Remove animated to discard pile (create it!!!)
-                    cardView.removeFromSuperview()
+                    animate(cardView) { cardView.alpha = 0.0 }
+                    animate(cardView, after: standardAnimationDuration) { cardView.removeFromSuperview() }
                 }
             }
-            rearrange()
+            rearrange(after: standardAnimationDuration + 0.1)
         }
     }
     
@@ -78,16 +80,26 @@ class CardsView: UIView {
 }
 
 extension CardsView {
-    func animate(withDuraton duration: TimeInterval = 0.3,
-                 delay: TimeInterval = 0.0,
+    func animate(_ view: UIView,
+                 withDuration duration: TimeInterval = 0.5,
                  options: UIView.AnimationOptions = [.curveEaseInOut],
+                 after delay: TimeInterval? = nil,
                  _ animations: @escaping () -> Void,
-                 completion: ((UIViewAnimatingPosition) -> Void)? = nil) {
-        UIViewPropertyAnimator.runningPropertyAnimator(withDuration: duration,
-                                                       delay: delay,
-                                                       options: options,
-                                                       animations: animations,
-                                                       completion: completion)
+                 completion: ((Bool) -> Void)? = nil) {
+        let animation: (() -> Void) = {
+            Self.transition(with: view,
+                            duration: duration,
+                            options: options,
+                            animations: animations,
+                            completion: completion)
+            
+        }
+        
+        if let time = delay {
+            Timer.scheduledTimer(withTimeInterval: time, repeats: false) { _ in animation() }
+        } else {
+            animation()
+        }
     }
 }
 

@@ -17,12 +17,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="JHB-54-auw" customClass="CardsView" customModule="AnimatedSet" customModuleProvider="target">
-                                <rect key="frame" x="20" y="64" width="388" height="768"/>
+                                <rect key="frame" x="20" y="64" width="388" height="758"/>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BUC-X8-CAW">
-                                <rect key="frame" x="177.66666666666666" y="852" width="73" height="30"/>
+                                <rect key="frame" x="159" y="832" width="110" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="110" id="hSX-n8-urf"/>
+                                    <constraint firstAttribute="height" constant="50" id="yXi-wu-Dl5"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <state key="normal" title="Deal cards"/>
                                 <connections>
                                     <action selector="dealCardsSelected:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Hxh-fm-3xI"/>
                                 </connections>
@@ -60,7 +63,7 @@
                             <constraint firstItem="MWI-Uc-hjq" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="4cu-To-ZJn"/>
                             <constraint firstItem="JHB-54-auw" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="8ZD-lY-8mq"/>
                             <constraint firstItem="qVz-zl-6JO" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="AQL-O3-y9H"/>
-                            <constraint firstItem="BUC-X8-CAW" firstAttribute="top" secondItem="JHB-54-auw" secondAttribute="bottom" constant="20" id="CLp-YR-tel"/>
+                            <constraint firstItem="BUC-X8-CAW" firstAttribute="top" secondItem="JHB-54-auw" secondAttribute="bottom" constant="10" id="CLp-YR-tel"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="JHB-54-auw" secondAttribute="trailing" constant="20" id="D3u-cf-IpQ"/>
                             <constraint firstItem="zpl-bc-Hxp" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="BUC-X8-CAW" secondAttribute="trailing" constant="20" id="F3Y-Y7-3zj"/>
                             <constraint firstItem="BUC-X8-CAW" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="FxE-az-yEm"/>
@@ -77,7 +80,7 @@
                     </view>
                     <connections>
                         <outlet property="cardsView" destination="JHB-54-auw" id="S6g-bk-6ap"/>
-                        <outlet property="dealCardsButton" destination="BUC-X8-CAW" id="qMc-qV-YFp"/>
+                        <outlet property="deckButton" destination="BUC-X8-CAW" id="qMc-qV-YFp"/>
                         <outlet property="newGameButton" destination="zpl-bc-Hxp" id="e3l-0u-d7l"/>
                         <outlet property="scoreLabel" destination="MWI-Uc-hjq" id="yO7-ZK-eX3"/>
                         <outlet property="winningLabel" destination="hK6-Os-g8f" id="gPi-1x-e2C"/>

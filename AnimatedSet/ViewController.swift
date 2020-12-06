@@ -36,7 +36,7 @@ class ViewController: UIViewController {
     }
     private var gameEnded: Bool = false {
         didSet {
-            dealCardsButton.isHidden = gameEnded
+            deckButton.isHidden = gameEnded
             scoreLabel.isHidden = gameEnded
             newGameButton.isHidden = gameEnded
             
@@ -70,10 +70,11 @@ class ViewController: UIViewController {
             winningNewGameButton.setTitle("New game", for: .normal)
         }
     }
-    @IBOutlet weak var dealCardsButton: UIButton! {
+    @IBOutlet weak var deckButton: UIButton! {
         didSet {
-            dealCardsButton.setAttributedTitle(NSAttributedString(string: "Deal cards"), for: .normal)
-            cardsView.deckFrame = dealCardsButton.frame
+            deckButton.backgroundColor = .setGameBackground
+            deckButton.layer.cornerRadius = 5.0
+            cardsView.deckFrame = deckButton.frame
         }
     }
     @IBOutlet weak var winningLabel: UILabel! {
@@ -223,7 +224,7 @@ class ViewController: UIViewController {
         currentCards = game.start()
         selectedCards = .init()
         matchedCards = .init()
-        dealCardsButton.disabled = false
+        deckButton.disabled = false
         
         updateCardsView()
         gameEnded = false
@@ -233,7 +234,6 @@ class ViewController: UIViewController {
 // MARK: Delegation conformance
 extension ViewController: SetGameDelegate {
     func gameDidStart() -> [Card] {
-        dealCardsButton.setAttributedTitle(NSAttributedString(string: "No more space!"), for: .disabled)
         scoreCount = 0
         startingDatetime = .init()
         gameEnded = false
@@ -264,8 +264,7 @@ extension ViewController: SetGameDelegate {
                 updateCardsView()
                 
                 if !game.isDeckFinished {
-                    dealCardsButton.textColor(to: .systemRed)
-                    dealCardsButton.disabled = false
+                    deckButton.disabled = false
                 }
             } else {
                 scoreCount -= 5
@@ -289,12 +288,7 @@ extension ViewController: SetGameDelegate {
         let newCards = game.cardsFromDeck(maxDealingCards)
         
         if game.isDeckFinished {
-            dealCardsButton.disabled = true
-        }
-        
-        dealCardsButton.textColor(to: .systemBlue)
-        if game.isDeckFinished {
-            dealCardsButton.setAttributedTitle(NSAttributedString(string: "Deck is over!"), for: .disabled)
+            deckButton.disabled = true
         }
         return newCards
     }
