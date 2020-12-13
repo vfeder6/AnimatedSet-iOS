@@ -11,6 +11,7 @@ class CardsView: UIView {
     weak var gestureDelegate: UIGestureRecognizerDelegate?
     var deckFrame: CGRect?
     private let standardAnimationDuration: TimeInterval = 0.5
+    private let forceUpdate = false
     private lazy var grid: Grid = {
         createGrid()
     }()
@@ -21,38 +22,39 @@ class CardsView: UIView {
     }
     
     override func draw(_ rect: CGRect) {
-        func rearrange(after delay: TimeInterval = 0.0) {
-            for index in 0 ..< subviews.count {
-                if let cell = grid[index] {
-                    animate(subviews[index], after: delay) { self.subviews[index].frame = cell }
-                }
-            }
-        }
-        
         grid = createGrid()
         
-        if cards.count > subviews.count {
-            rearrange()
-            
-            for index in subviews.count ..< cards.count {
-                if let cell = grid[index] {
-                    let cardView = CardView(frame: deckFrame ?? CGRect.zero, shape: cards[index].0, color: cards[index].1, shading: cards[index].2, number: cards[index].3)
-                    let tapGestureRecognizer = UITapGestureRecognizer(target: gestureDelegate, action: #selector(ViewController.handleTapGesture(_:)))
-                    cardView.addGestureRecognizer(tapGestureRecognizer)
-                    cardView.alpha = 0.0
-                    cardView.frame = deckFrame ?? CGRect.zero
-                    animate(cardView, withDuration: 2, after: standardAnimationDuration) { cardView.frame = cell; cardView.alpha = 1.0 }
-                    self.addSubview(cardView)
-                }
+        if !forceUpdate {
+            if cards.count > subviews.count {
+                rearrange()
+                deal(from: subviews.count, to: cards.count)
+            } else {
+                rearrange(after: standardAnimationDuration)
             }
         } else {
-            subviews.forEach { subview in
-                if let cardView = subview as? CardView, !cards.contains(where: { $0 == (cardView.shape, cardView.color, cardView.shading, cardView.number) }) {
-                    animate(cardView) { cardView.alpha = 0.0 }
-                    animate(cardView, after: standardAnimationDuration) { cardView.removeFromSuperview() }
-                }
+            subviews.forEach { $0.removeFromSuperview() }
+            deal(from: 0, to: cards.count)
+        }
+    }
+    
+    private func rearrange(after delay: TimeInterval = 0.0) {
+        for index in 0 ..< subviews.count {
+            if let cell = grid[index] {
+                animate(subviews[index], after: delay) { self.subviews[index].frame = cell }
             }
-            rearrange(after: standardAnimationDuration + 0.1)
+        }
+    }
+    
+    private func deal(from startIndex: Int, to endIndex: Int) {
+        for index in startIndex ..< endIndex {
+            if let cell = grid[index] {
+                let cardView = CardView(frame: deckFrame ?? CGRect.zero, shape: cards[index].0, color: cards[index].1, shading: cards[index].2, number: cards[index].3)
+                let tapGestureRecognizer = UITapGestureRecognizer(target: gestureDelegate, action: #selector(SetViewController.handleTapGesture(_:)))
+                cardView.addGestureRecognizer(tapGestureRecognizer)
+                cardView.alpha = 0.0
+                animate(cardView, after: standardAnimationDuration) { cardView.frame = cell; cardView.alpha = 1.0 }
+                self.addSubview(cardView)
+            }
         }
     }
     
@@ -62,24 +64,28 @@ class CardsView: UIView {
         return grid
     }
     
-    func updateCards(_ cards: [(CardView.Shape, UIColor, CardView.Shading, Int)]) {
-        if cards.count > self.cards.count {
-            cards.forEach { card in
-                if !self.cards.contains(where: { $0 == card }) {
-                    self.cards.append(card)
+    func updateCards(_ cards: [(CardView.Shape, UIColor, CardView.Shading, Int)], replace: Bool = false) {
+        if !replace {
+            if cards.count > self.cards.count {
+                cards.forEach { card in
+                    if !self.cards.contains(where: { $0 == card }) {
+                        self.cards.append(card)
+                    }
+                }
+            } else {
+                self.cards.forEach { card in
+                    if !cards.contains(where: { $0 == card }) {
+                        self.cards.remove(card)
+                    }
                 }
             }
         } else {
-            self.cards.forEach { card in
-                if !cards.contains(where: { $0 == card }) {
-                    self.cards.remove(card)
-                }
-            }
+            self.cards = cards
         }
     }
 }
 
-extension CardsView {
+extension UIView {
     func animate(_ view: UIView,
                  withDuration duration: TimeInterval = 0.5,
                  options: UIView.AnimationOptions = [.curveEaseInOut],

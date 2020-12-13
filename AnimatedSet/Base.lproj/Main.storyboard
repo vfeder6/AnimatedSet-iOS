@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina6_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -8,79 +7,76 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Set View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="AnimatedSet" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="SetViewController" customModule="AnimatedSet" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="JHB-54-auw" customClass="CardsView" customModule="AnimatedSet" customModuleProvider="target">
-                                <rect key="frame" x="20" y="64" width="388" height="758"/>
+                                <rect key="frame" x="20" y="20" width="560" height="510"/>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BUC-X8-CAW">
-                                <rect key="frame" x="159" y="832" width="110" height="50"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="110" id="hSX-n8-urf"/>
-                                    <constraint firstAttribute="height" constant="50" id="yXi-wu-Dl5"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <connections>
-                                    <action selector="dealCardsSelected:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Hxh-fm-3xI"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You win" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hK6-Os-g8f">
-                                <rect key="frame" x="164" y="450" width="100" height="36"/>
+                                <rect key="frame" x="250" y="282" width="100" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="30"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qVz-zl-6JO">
-                                <rect key="frame" x="149" y="494" width="130" height="30"/>
+                                <rect key="frame" x="235" y="326" width="130" height="30"/>
                                 <state key="normal" title="Winning new game"/>
                                 <connections>
                                     <action selector="newGameSelected:" destination="BYZ-38-t0r" eventType="touchUpInside" id="2Mm-T5-dTa"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zpl-bc-Hxp">
-                                <rect key="frame" x="335" y="852" width="73" height="30"/>
+                                <rect key="frame" x="507" y="560" width="73" height="30"/>
                                 <state key="normal" title="New game"/>
                                 <connections>
                                     <action selector="newGameSelected:" destination="BYZ-38-t0r" eventType="touchUpInside" id="CzD-oi-FII"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Score" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MWI-Uc-hjq">
-                                <rect key="frame" x="20" y="858" width="40" height="18"/>
+                                <rect key="frame" x="20" y="566" width="40" height="18"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZHc-er-DUz" customClass="DeckView" customModule="AnimatedSet" customModuleProvider="target">
+                                <rect key="frame" x="245" y="540" width="110" height="50"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="35j-Rh-4Hn"/>
+                                    <constraint firstAttribute="width" constant="110" id="Q4k-vh-uke"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="ZHc-er-DUz" secondAttribute="bottom" constant="10" id="1UD-p4-9gw"/>
                             <constraint firstItem="MWI-Uc-hjq" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="4cu-To-ZJn"/>
                             <constraint firstItem="JHB-54-auw" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="8ZD-lY-8mq"/>
                             <constraint firstItem="qVz-zl-6JO" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="AQL-O3-y9H"/>
-                            <constraint firstItem="BUC-X8-CAW" firstAttribute="top" secondItem="JHB-54-auw" secondAttribute="bottom" constant="10" id="CLp-YR-tel"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="JHB-54-auw" secondAttribute="trailing" constant="20" id="D3u-cf-IpQ"/>
-                            <constraint firstItem="zpl-bc-Hxp" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="BUC-X8-CAW" secondAttribute="trailing" constant="20" id="F3Y-Y7-3zj"/>
-                            <constraint firstItem="BUC-X8-CAW" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="FxE-az-yEm"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="MWI-Uc-hjq" secondAttribute="bottom" constant="16" id="LEx-ul-efR"/>
                             <constraint firstItem="hK6-Os-g8f" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="Qba-IZ-tt8"/>
-                            <constraint firstItem="BUC-X8-CAW" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="MWI-Uc-hjq" secondAttribute="trailing" constant="20" id="Qvk-hA-w8m"/>
                             <constraint firstItem="hK6-Os-g8f" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="Stt-2r-y6g"/>
+                            <constraint firstItem="ZHc-er-DUz" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="MWI-Uc-hjq" secondAttribute="trailing" constant="20" id="TG9-s4-BVy"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="zpl-bc-Hxp" secondAttribute="bottom" constant="10" id="Tpu-oa-jV5"/>
                             <constraint firstItem="qVz-zl-6JO" firstAttribute="top" secondItem="hK6-Os-g8f" secondAttribute="bottom" constant="8" symbolic="YES" id="YhM-Ha-TEW"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="BUC-X8-CAW" secondAttribute="bottom" constant="10" id="bev-ju-pbg"/>
+                            <constraint firstItem="zpl-bc-Hxp" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="ZHc-er-DUz" secondAttribute="trailing" constant="20" id="bcJ-g6-eme"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="zpl-bc-Hxp" secondAttribute="trailing" constant="20" id="ixE-Jd-sax"/>
+                            <constraint firstItem="ZHc-er-DUz" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="tHD-ph-BTN"/>
+                            <constraint firstItem="ZHc-er-DUz" firstAttribute="top" secondItem="JHB-54-auw" secondAttribute="bottom" constant="10" id="tPN-5y-moo"/>
                             <constraint firstItem="JHB-54-auw" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="tuq-gn-6t0"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="cardsView" destination="JHB-54-auw" id="S6g-bk-6ap"/>
-                        <outlet property="deckButton" destination="BUC-X8-CAW" id="qMc-qV-YFp"/>
+                        <outlet property="deckView" destination="ZHc-er-DUz" id="0w3-be-9yW"/>
                         <outlet property="newGameButton" destination="zpl-bc-Hxp" id="e3l-0u-d7l"/>
                         <outlet property="scoreLabel" destination="MWI-Uc-hjq" id="yO7-ZK-eX3"/>
                         <outlet property="winningLabel" destination="hK6-Os-g8f" id="gPi-1x-e2C"/>

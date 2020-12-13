@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class SetViewController: UIViewController {
     // MARK: Properties
     private let maxDealingCards = 3
     private let initialCards = 12
@@ -36,7 +36,7 @@ class ViewController: UIViewController {
     }
     private var gameEnded: Bool = false {
         didSet {
-            deckButton.isHidden = gameEnded
+            deckView.isHidden = gameEnded
             scoreLabel.isHidden = gameEnded
             newGameButton.isHidden = gameEnded
             
@@ -44,6 +44,7 @@ class ViewController: UIViewController {
             winningNewGameButton.isHidden = !gameEnded
         }
     }
+    private lazy var animator = UIDynamicAnimator(referenceView: cardsView)
     
     // MARK: Outlets
     @IBOutlet weak var scoreLabel: UILabel!
@@ -70,11 +71,15 @@ class ViewController: UIViewController {
             winningNewGameButton.setTitle("New game", for: .normal)
         }
     }
-    @IBOutlet weak var deckButton: UIButton! {
+    @IBOutlet weak var deckView: DeckView! {
         didSet {
-            deckButton.backgroundColor = .setGameBackground
-            deckButton.layer.cornerRadius = 5.0
-            cardsView.deckFrame = deckButton.frame
+            deckView.dealingEnabled = true
+            deckView.backgroundColor = .setGameBackground
+            deckView.layer.cornerRadius = 8.0
+            cardsView.deckFrame = deckView.frame
+            
+            let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleDeckTapGesture(_:)))
+            deckView.addGestureRecognizer(tapGestureRecognizer)
         }
     }
     @IBOutlet weak var winningLabel: UILabel! {
@@ -86,23 +91,23 @@ class ViewController: UIViewController {
     // MARK: Lifecycle ovverides
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         game.delegate = self
         currentCards = game.start()
         updateCardsView()
     }
     
     // MARK: UI Methods
-    private func updateCardsView() {
-        cardsView.updateCards(convertForView(currentCards))
+    private func updateCardsView(replace: Bool = false) {
+        cardsView.updateCards(convertForView(currentCards), replace: replace)
     }
     
-    private func cardView(for card: Card) -> CardView {
-        return cardsView.subviews.filter { view in
+    private func cardView(for card: Card) -> CardView? {
+        let cardViews = cardsView.subviews.filter { view in
             let cardView = view as! CardView
             let convertedCard = convertForModel((cardView.shape!, cardView.color!, cardView.shading!, cardView.number!))
             return convertedCard == card
-        }[0] as! CardView
+        }
+        return cardViews.isEmpty ? nil : cardViews[0] as? CardView
     }
     
     // TODO Refactor
@@ -211,11 +216,6 @@ class ViewController: UIViewController {
     }
     
     // MARK: Actions
-    @IBAction func dealCardsSelected(_ sender: UIButton) {
-        currentCards += game.dealCards()
-        updateCardsView()
-    }
-    
     @IBAction func newGameSelected(_ sender: UIButton) {
         scoreCount = 0
         
@@ -224,15 +224,15 @@ class ViewController: UIViewController {
         currentCards = game.start()
         selectedCards = .init()
         matchedCards = .init()
-        deckButton.disabled = false
+        deckView.dealingEnabled = true
         
-        updateCardsView()
+        updateCardsView(replace: true)
         gameEnded = false
     }
 }
 
 // MARK: Delegation conformance
-extension ViewController: SetGameDelegate {
+extension SetViewController: SetGameDelegate {
     func gameDidStart() -> [Card] {
         scoreCount = 0
         startingDatetime = .init()
@@ -242,7 +242,7 @@ extension ViewController: SetGameDelegate {
     
     func didSelectCard(_ card: Card) {
         let index = currentCards.firstIndex(of: card)!
-        let view = cardView(for: currentCards[index])
+        let view = cardView(for: currentCards[index])!
         
         // Deselecting card if it was already selected
         if selectedCards[index] == currentCards[index] {
@@ -258,20 +258,38 @@ extension ViewController: SetGameDelegate {
             if game.isSet(for: selectedCards.values.map { $0 }) {
                 scoreCount += 3
                 
+                cardsView.subviews.forEach { subview in
+                    if let cardView = subview as? CardView,
+                       selectedCards.values.contains(where: { convertForView([$0])[0] == (cardView.shape, cardView.color, cardView.shading, cardView.number) }) {
+                        cardView.removeFromSuperview()
+                        
+                        let cardViewCopy: CardView = cardView.copy()
+                        cardsView.addSubview(cardViewCopy)
+                        
+                        let snap = UISnapBehavior(item: cardViewCopy, snapTo: CGPoint(x: newGameButton.frame.minX, y: newGameButton.frame.minY))
+                        snap.damping = 1.0
+                        
+                        animator.addBehavior(snap)
+                        
+                        cardViewCopy.animate(cardViewCopy, after: 0.5, {
+                            cardViewCopy.alpha = 0.0
+                        }, completion: { finished in
+                            cardViewCopy.removeFromSuperview()
+                        })
+                    }
+                }
+                
                 selectedCards.forEach { card in
                     currentCards.removeAll(where: { $0 == card.value })
                 }
-                updateCardsView()
                 
-                if !game.isDeckFinished {
-                    deckButton.disabled = false
-                }
+                updateCardsView()
+                deckView.dealingEnabled = !game.isDeckFinished
             } else {
                 scoreCount -= 5
-            }
-            // TODO: set selected to false from cardViews before emptying selectedCards
-            selectedCards.values.forEach { card in
-                cardView(for: card).selected = false
+                selectedCards.values.forEach { card in
+                    cardView(for: card)?.selected = false
+                }
             }
             selectedCards = [:]
         }
@@ -288,7 +306,7 @@ extension ViewController: SetGameDelegate {
         let newCards = game.cardsFromDeck(maxDealingCards)
         
         if game.isDeckFinished {
-            deckButton.disabled = true
+            deckView.dealingEnabled = false
         }
         return newCards
     }
@@ -343,7 +361,19 @@ extension ViewController: SetGameDelegate {
     }
 }
 
-extension ViewController: UIGestureRecognizerDelegate {
+extension SetViewController: UIGestureRecognizerDelegate {
+    @objc func handleDeckTapGesture(_ sender: UITapGestureRecognizer) {
+        if let senderView = sender.view, let deckView = senderView as? DeckView {
+            switch sender.state {
+            case .ended where deckView.dealingEnabled:
+                currentCards += game.dealCards()
+                updateCardsView()
+            default:
+                break
+            }
+        }
+    }
+    
     @objc func handleTapGesture(_ sender: UITapGestureRecognizer) {
         guard let cardView = sender.view as? CardView else {
             return

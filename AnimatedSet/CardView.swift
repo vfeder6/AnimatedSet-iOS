@@ -181,6 +181,10 @@ class CardView: UIView {
         
         context.restoreGState()
     }
+    
+    func copy() -> CardView {
+        return CardView(frame: self.frame, shape: self.shape!, color: self.color!, shading: self.shading!, number: self.number!)
+    }
 }
 
 extension CardView {
